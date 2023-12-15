@@ -3,10 +3,28 @@ A sample Hello World server.
 """
 import os
 
-from flask import Flask, render_template
-
+from flask import Flask, render_template, jsonify
+from inventory import inventory
 # pylint: disable=C0103
 app = Flask(__name__)
+
+# Generate an app route to display a list of inventory items in the JSON format from the inventory.py file.
+# Use the GET method.
+
+@app.route('/inventory', methods=['GET'])
+def inventory_list():
+    return jsonify(inventory)
+
+# Generate an App route to get a product from the list of inventory items given the productID.
+# Use the GET method.
+# If there is an invalid productID, return a 404 error with an error message in the JSON.
+@app.route('/inventory/<productid>', methods=['GET'])
+def inventory_item(productid):
+    """Return a single inventory item in JSON format."""
+    for item in inventory:
+        if item['productid'] == productid:
+            return jsonify(item)
+    return jsonify({'error': 'Product not found'}), 404
 
 
 @app.route('/')
